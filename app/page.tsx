@@ -89,12 +89,12 @@ export default function OvoLanding() {
     video.addEventListener('loadedmetadata', setInitialFrame);
 
     let animationFrameId: number;
-    let isSeeking = false;
+    let lastSeekTime = 0;
 
-    // WebM performance optimization: Prevent seeking while a seek is already in progress,
-    // and debounce the requestAnimationFrame to prevent call stacking.
-    const handleSeeked = () => { isSeeking = false; };
-    video.addEventListener('seeked', handleSeeked);
+    // Mobile/WebM performance optimization: 
+    // The `seeked` event is highly unreliable on mobile browsers (especially iOS).
+    // Instead of locking based on `seeked`, we use a simple timestamp throttle (~25fps max scrubbing)
+    // to prevent freezing the main thread without permanently locking the video.
 
     const unsubscribe = smoothProgress.on("change", (v) => {
       // Ensure duration is finite (WebM files sometimes have Infinity duration initially)
@@ -102,9 +102,11 @@ export default function OvoLanding() {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         
         animationFrameId = requestAnimationFrame(() => {
-          if (!isSeeking) {
-            isSeeking = true;
+          const now = Date.now();
+          // Throttle updates to max ~25 frames per second on scroll to prevent mobile stutter
+          if (now - lastSeekTime > 40) {
             video.currentTime = v * video.duration;
+            lastSeekTime = now;
           }
         });
       }
@@ -114,7 +116,6 @@ export default function OvoLanding() {
       unsubscribe();
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       video.removeEventListener('loadedmetadata', setInitialFrame);
-      video.removeEventListener('seeked', handleSeeked);
     };
   }, [smoothProgress]);
 
