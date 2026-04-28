@@ -45,7 +45,16 @@ export default function OvoLanding() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const [videoSrc, setVideoSrc] = useState("/output.mp4");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    // Serve WebM on mobile devices for optimized performance, MP4 on desktop
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) {
+      setVideoSrc("/output.webm");
+    }
+  }, []);
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -153,7 +162,7 @@ export default function OvoLanding() {
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
           <video
             ref={videoRef}
-            src="/output.webm"
+            src={videoSrc}
             className="absolute inset-0 h-full w-full object-cover"
             muted
             playsInline
