@@ -49,6 +49,7 @@ export default function OvoLanding() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isReady, setIsReady] = useState(false);
 
   const config = useMemo(() => ({
     totalFrames: 727,
@@ -62,13 +63,22 @@ export default function OvoLanding() {
     for (let i = 1; i <= config.totalFrames; i++) {
       const img = new Image();
       img.src = config.getFramePath(i);
+      
       img.onload = () => {
         loadedCount++;
         setLoadingProgress(Math.round((loadedCount / config.totalFrames) * 100));
-        if (loadedCount === config.totalFrames) setImages(loadedImages);
+        
+        // Optimization: Unblock the UI as soon as the first 5 frames are ready.
+        // The remaining 722 frames will load progressively in the background!
+        if (loadedCount === 5) {
+          setIsReady(true);
+        }
       };
       loadedImages.push(img);
     }
+    
+    // Store image references immediately so the canvas can draw them as they finish loading
+    setImages(loadedImages);
   }, [config]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,11 +113,12 @@ export default function OvoLanding() {
     const ctx = canvas?.getContext('2d');
     const image = images[frameIndex - 1];
 
-    if (ctx && image && canvas) {
-      const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
-      const x = (canvas.width / 2) - (image.width / 2) * scale;
-      const y = (canvas.height / 2) - (image.height / 2) * scale;
-      ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
+    // Only draw if the image has fully loaded to prevent rendering empty frames
+    if (ctx && image && image.complete && image.naturalWidth > 0 && canvas) {
+      const scale = Math.max(canvas.width / image.naturalWidth, canvas.height / image.naturalHeight);
+      const x = (canvas.width / 2) - (image.naturalWidth / 2) * scale;
+      const y = (canvas.height / 2) - (image.naturalHeight / 2) * scale;
+      ctx.drawImage(image, x, y, image.naturalWidth * scale, image.naturalHeight * scale);
     }
   };
 
@@ -164,7 +175,7 @@ export default function OvoLanding() {
       className="bg-black text-white selection:bg-blue-500/30 h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth"
     >
       {/* Loading Overlay */}
-      {loadingProgress < 100 && (
+      {!isReady && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white p-10 text-center">
           <p className="text-sm uppercase tracking-widest text-zinc-400">Loading Ovo</p>
           <p className="mt-2 text-5xl font-extrabold tracking-tighter">{loadingProgress}%</p>
