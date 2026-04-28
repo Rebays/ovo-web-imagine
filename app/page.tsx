@@ -136,7 +136,7 @@ export default function OvoLanding() {
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
           <video
             ref={videoRef}
-            src="/output.mp4"
+            src="/output.webm"
             className="absolute inset-0 h-full w-full object-cover"
             muted
             playsInline
@@ -338,8 +338,8 @@ export default function OvoLanding() {
                       className="flex-1 bg-black/40 border border-white/20 text-white placeholder-zinc-500 rounded-full px-6 py-4 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all focus:bg-black/60"
                       disabled={status === "submitting"}
                     />
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       disabled={status === "submitting"}
                       className="bg-white text-black px-8 py-4 rounded-full font-bold hover:bg-zinc-200 transition-all shadow-lg whitespace-nowrap hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
                     >
