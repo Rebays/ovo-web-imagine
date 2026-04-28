@@ -223,7 +223,7 @@ export default function OvoLanding() {
                 The OVO App.
               </h1>
               <p className="text-lg md:text-xl text-zinc-400 max-w-xl font-light leading-relaxed mb-10">
-                Your ultimate logistics companion. Track packages, manage shipments, and stay updated from anywhere.
+                Your ultimate logistics companion for shipping exclusively from Australia to the Solomon Islands. Track packages, manage shipments, and stay updated from anywhere.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-start items-stretch sm:items-center w-full sm:w-auto">
                 <a href="#cta" className="w-full sm:w-auto bg-white text-black px-8 py-3.5 rounded-full text-sm font-medium transition-transform hover:scale-105 active:scale-95 text-center inline-block">
@@ -248,28 +248,28 @@ export default function OvoLanding() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Transparent</span>
               </h2>
               <p className="text-lg text-zinc-400 font-light leading-relaxed mb-12">
-                We've streamlined the logistics process so you don't have to worry about a thing.
+                Tired of hidden fees and shipping black holes? We've streamlined the logistics process so you never have to guess again.
               </p>
               <div className="flex flex-col gap-8">
                 <div className="flex items-start gap-6">
                   <div className="text-emerald-400/80 text-xl font-light shrink-0 pt-0.5">01</div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">Book Your Shipment</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Enter your details in the OVO app and get an instant quote.</p>
+                    <h3 className="text-lg font-medium text-white mb-1">Get Upfront Pricing</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Enter your details in the OVO app and get an instant quote that includes shipping, customs, and duty. Zero surprise fees.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-6">
                   <div className="text-teal-400/80 text-xl font-light shrink-0 pt-0.5">02</div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">We Collect & Ship</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Our team handles the pickup and secure transport across the Pacific.</p>
+                    <h3 className="text-lg font-medium text-white mb-1">We Collect in Australia</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Our team handles the pickup in Australia and secure transport straight to the Solomon Islands.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-6">
                   <div className="text-blue-400/80 text-xl font-light shrink-0 pt-0.5">03</div>
                   <div>
                     <h3 className="text-lg font-medium text-white mb-1">You Receive</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Track every step and receive your goods safely in Honiara.</p>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Follow your cargo's journey in the app and receive your goods safely in Honiara.</p>
                   </div>
                 </div>
               </div>
@@ -290,28 +290,28 @@ export default function OvoLanding() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Palm of your Hand</span>
               </h2>
               <p className="text-lg text-zinc-400 font-light leading-relaxed mb-12">
-                Manage your entire shipping experience from our powerful new mobile application. Everything you need, right when you need it.
+                Say goodbye to calling shipping agents and waiting for emails. Manage your entire shipping experience from our powerful new mobile application.
               </p>
               <div className="flex flex-col gap-8">
                 <div className="flex items-start gap-6">
                   <div className="text-emerald-400/80 text-xl font-light shrink-0 pt-0.5">01</div>
                   <div>
                     <h3 className="text-lg font-medium text-white mb-1">Real-time Tracking</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Watch your packages move in real-time with push notifications at every major milestone.</p>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Never lose sight of your cargo. Watch your packages move with live tracking and push notifications at every major milestone.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-6">
                   <div className="text-teal-400/80 text-xl font-light shrink-0 pt-0.5">02</div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">Easy Payments</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Pay for your shipping securely and instantly right from within the OVO app.</p>
+                    <h3 className="text-lg font-medium text-white mb-1">Transparent Customs & Tax</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">No surprise bills when your items reach Honiara. See all customs duties and taxes calculated visibly before you even ship.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-6">
                   <div className="text-blue-400/80 text-xl font-light shrink-0 pt-0.5">03</div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">Instant Support</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Connect with our support team instantly through the app for any questions or assistance.</p>
+                    <h3 className="text-lg font-medium text-white mb-1">Easy Payments</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Pay for your shipping and duty securely and instantly right from within the OVO app.</p>
                   </div>
                 </div>
               </div>
@@ -328,11 +328,11 @@ export default function OvoLanding() {
                 Global Network
               </div>
               <h2 className="text-4xl md:text-5xl font-medium text-white tracking-tight leading-tight mb-6">
-                Bridging the <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Pacific Divide</span>
+                Australia to <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Solomon Islands</span>
               </h2>
               <p className="text-lg text-zinc-400 font-light leading-relaxed mb-10">
-                Seamlessly connect your business from Australia to Honiara. We handle the complexity so you can focus on what matters.
+                The only logistics platform dedicated exclusively to the Australia-Solomons route. We handle the complexity so you can focus on what matters.
               </p>
               <div className="flex flex-col gap-6">
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 w-full max-w-sm flex items-center gap-4 text-left">
