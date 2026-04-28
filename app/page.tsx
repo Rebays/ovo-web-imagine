@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
 function Header() {
@@ -43,25 +43,38 @@ function Footer() {
 export default function OvoLanding() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [videoSrc, setVideoSrc] = useState("/output.mp4");
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [images, setImages] = useState<HTMLImageElement[]>([]);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  const config = useMemo(() => ({
+    totalFrames: 727,
+    getFramePath: (i: number) => `/frames/ovo/frame-${String(i).padStart(3, '0')}.jpg`,
+  }), []);
 
   useEffect(() => {
-    // Serve WebM on mobile devices for optimized performance, MP4 on desktop
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (isMobile) {
-      setVideoSrc("/output.webm");
+    const loadedImages: HTMLImageElement[] = [];
+    let loadedCount = 0;
+
+    for (let i = 1; i <= config.totalFrames; i++) {
+      const img = new Image();
+      img.src = config.getFramePath(i);
+      img.onload = () => {
+        loadedCount++;
+        setLoadingProgress(Math.round((loadedCount / config.totalFrames) * 100));
+        if (loadedCount === config.totalFrames) setImages(loadedImages);
+      };
+      loadedImages.push(img);
     }
-  }, []);
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  }, [config]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus("submitting");
-    // Simulate API call
     setTimeout(() => {
       setStatus("success");
       setEmail("");
@@ -82,51 +95,46 @@ export default function OvoLanding() {
     restDelta: 0.001
   });
 
-  // 3. Update video frame on scroll
+  // 3. Map scroll progress to frame index
+  const currentFrameIndex = useTransform(smoothProgress, [0, 1], [1, config.totalFrames]);
+
+  const drawFrame = (frameIndex: number) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    const image = images[frameIndex - 1];
+
+    if (ctx && image && canvas) {
+      const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
+      const x = (canvas.width / 2) - (image.width / 2) * scale;
+      const y = (canvas.height / 2) - (image.height / 2) * scale;
+      ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
+    }
+  };
+
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const setInitialFrame = () => {
-      video.pause();
-      if (video.readyState >= 1 && video.currentTime < 0.1) {
-        video.currentTime = 0.01;
-      }
-    };
-
-    setInitialFrame();
-    video.addEventListener('loadedmetadata', setInitialFrame);
-
-    let animationFrameId: number;
-    let lastSeekTime = 0;
-
-    // Mobile/WebM performance optimization: 
-    // The `seeked` event is highly unreliable on mobile browsers (especially iOS).
-    // Instead of locking based on `seeked`, we use a simple timestamp throttle (~25fps max scrubbing)
-    // to prevent freezing the main thread without permanently locking the video.
-
-    const unsubscribe = smoothProgress.on("change", (v) => {
-      // Ensure duration is finite (WebM files sometimes have Infinity duration initially)
-      if (video.duration && Number.isFinite(video.duration)) {
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        
-        animationFrameId = requestAnimationFrame(() => {
-          const now = Date.now();
-          // Throttle updates to max ~25 frames per second on scroll to prevent mobile stutter
-          if (now - lastSeekTime > 40) {
-            video.currentTime = v * video.duration;
-            lastSeekTime = now;
-          }
-        });
-      }
+    if (images.length === 0) return;
+    return currentFrameIndex.on("change", (latestFrame) => {
+      drawFrame(Math.round(latestFrame));
     });
+  }, [images, currentFrameIndex]);
 
-    return () => {
-      unsubscribe();
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      video.removeEventListener('loadedmetadata', setInitialFrame);
+  useEffect(() => {
+    if (images.length === config.totalFrames) drawFrame(1);
+  }, [images, config]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drawFrame(Math.round(currentFrameIndex.get()));
+      }
     };
-  }, [smoothProgress]);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [images]);
 
   // 4. Content Animations perfectly aligned to 5 snap points: 0, 0.25, 0.5, 0.75, 1.0
 
@@ -155,19 +163,30 @@ export default function OvoLanding() {
       ref={containerRef}
       className="bg-black text-white selection:bg-blue-500/30 h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth"
     >
+      {/* Loading Overlay */}
+      {loadingProgress < 100 && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white p-10 text-center">
+          <p className="text-sm uppercase tracking-widest text-zinc-400">Loading Ovo</p>
+          <p className="mt-2 text-5xl font-extrabold tracking-tighter">{loadingProgress}%</p>
+          <div className="mt-10 h-1 w-64 rounded-full bg-zinc-800 overflow-hidden">
+            <motion.div
+              className="h-full bg-white"
+              initial={{ width: 0 }}
+              animate={{ width: `${loadingProgress}%` }}
+              transition={{ duration: 0.1 }}
+            />
+          </div>
+        </div>
+      )}
+
       <Header />
 
       <div ref={sectionRef} className="relative h-[500dvh]">
         {/* Sticky Video Canvas & Content Layers */}
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            className="absolute inset-0 h-full w-full object-cover"
-            muted
-            playsInline
-            preload="auto"
-            autoPlay
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 h-full w-full"
           />
 
           {/* Premium Dynamic Gradient Overlays */}
