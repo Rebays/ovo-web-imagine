@@ -88,17 +88,33 @@ export default function OvoLanding() {
     setInitialFrame();
     video.addEventListener('loadedmetadata', setInitialFrame);
 
+    let animationFrameId: number;
+    let isSeeking = false;
+
+    // WebM performance optimization: Prevent seeking while a seek is already in progress,
+    // and debounce the requestAnimationFrame to prevent call stacking.
+    const handleSeeked = () => { isSeeking = false; };
+    video.addEventListener('seeked', handleSeeked);
+
     const unsubscribe = smoothProgress.on("change", (v) => {
-      if (video.duration) {
-        requestAnimationFrame(() => {
-          video.currentTime = v * video.duration;
+      // Ensure duration is finite (WebM files sometimes have Infinity duration initially)
+      if (video.duration && Number.isFinite(video.duration)) {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        
+        animationFrameId = requestAnimationFrame(() => {
+          if (!isSeeking) {
+            isSeeking = true;
+            video.currentTime = v * video.duration;
+          }
         });
       }
     });
 
     return () => {
       unsubscribe();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
       video.removeEventListener('loadedmetadata', setInitialFrame);
+      video.removeEventListener('seeked', handleSeeked);
     };
   }, [smoothProgress]);
 
